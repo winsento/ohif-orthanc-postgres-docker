@@ -2,8 +2,8 @@ version: '3.6'
 services:
 
   viewer:
-    image: ohif/viewer:v3.7.1.10058
-    container_name: viewer
+    image: ohif/viewer:v4.2.15.12173
+    container_name: orthanc-viewer
     depends_on:
       - orthanc
     restart: always
@@ -19,11 +19,14 @@ services:
       - ${VIEWER_CONFIG}:/usr/share/nginx/html/app-config.js:ro
 
   orthanc:
-    image: osimis/orthanc:20.2.0
+    image: osimis/orthanc:20.7.3
     container_name: orthanc
     depends_on:
-      - postgres
+      - orthanc-postgres
     restart: always
+    ports:
+      - '8042:8042'
+      - '4242:4242'
     networks:
       - frontend
       - backend
@@ -39,9 +42,9 @@ services:
       - PG_ENABLED=true
     command: /etc/orthanc/orthanc.json
 
-  postgres:
-    image: postgres:12.1
-    container_name: postgres
+  orthanc-postgres:
+    image: postgres:12.3
+    container_name: orthanc-postgres
     networks:
       - backend
     volumes:
